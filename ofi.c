@@ -7,13 +7,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
 #include <sys/time.h>
 #include <sys/select.h>
 
 #define ERRORA "Wrong number of arguments\n"
 #define ERROR "Fatal error\n"
-#define BUFFER_SIZE 40
+#define BUFFER_SIZE 40000
 #define M1 "client "
 #define M2 ": "
 
@@ -139,7 +138,6 @@ void hndMsg(Client *c, Client *ptr)
 			error(ERROR);
 
 	}
-
 	if (ptr->buff && strlen(ptr->buff) == 0)
 	{
 		free(ptr->buff);
@@ -157,11 +155,9 @@ int main(int ac, char **av) {
 	// socket create and verification 
 	sockFd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockFd == -1) { 
-		printf("socket creation failed...\n"); 
-		exit(0); 
+		error(ERROR)	
 	} 
-	else
-		printf("Socket successfully created..\n"); 
+
 	bzero(&servaddr, sizeof(servaddr)); 
 
 	// assign IP, PORT 
@@ -171,22 +167,18 @@ int main(int ac, char **av) {
   
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockFd, (const struct sockaddr *)&servaddr, sizeof(servaddr))) != 0) { 
-		printf("socket bind failed...\n"); 
-		exit(0); 
+		error(ERROR)	
 	} 
-	else
-		printf("Socket successfully binded..\n");
-	if (listen(sockFd, 10) != 0) {
-		printf("cannot listen\n"); 
-		exit(0); 
-	}
-	printf("foud love.\n");
+
+	if (listen(sockFd, MAX) != 0)  //puse 120 y tambien fallo	
+		error(ERROR)	
+	
 
 	//
 	char buff[BUFFER_SIZE];
 	int maxId = 0;
-	int socksd;
 	Client c[MAX];
+	int maxFd = sockFd;
 	
 	for (int i = 0; i < MAX; i++)
 	{
@@ -195,9 +187,6 @@ int main(int ac, char **av) {
 		c[i].buff = NULL;
 	}
 
-
-	// 
-	int maxFd = sockFd;
 
 	fd_set tmpFd, fd;
 	FD_ZERO(&fd);
