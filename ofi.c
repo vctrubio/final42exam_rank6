@@ -155,7 +155,7 @@ int main(int ac, char **av) {
 	// socket create and verification 
 	sockFd = socket(AF_INET, SOCK_STREAM, 0); 
 	if (sockFd == -1) { 
-		error(ERROR)	
+		error(ERROR);	
 	} 
 
 	bzero(&servaddr, sizeof(servaddr)); 
@@ -167,11 +167,11 @@ int main(int ac, char **av) {
   
 	// Binding newly created socket to given IP and verification 
 	if ((bind(sockFd, (const struct sockaddr *)&servaddr, sizeof(servaddr))) != 0) { 
-		error(ERROR)	
+		error(ERROR);
 	} 
 
 	if (listen(sockFd, MAX) != 0)  //puse 120 y tambien fallo	
-		error(ERROR)	
+		error(ERROR);	
 	
 
 	//
@@ -186,7 +186,6 @@ int main(int ac, char **av) {
 		c[i].id = -1;
 		c[i].buff = NULL;
 	}
-
 
 	fd_set tmpFd, fd;
 	FD_ZERO(&fd);
