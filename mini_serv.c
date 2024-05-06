@@ -115,10 +115,13 @@ int main(int argc, char** argv)
 		read = active;
 		if (select(max_socket + 1, &read, &write, NULL, NULL) < 0)
 			continue;
+
+
 		for(int socket_id = 0; socket_id <= max_socket; socket_id++)
 		{
 			if (FD_ISSET(socket_id, &read))
 			{
+
 				if (server_socket == socket_id)
 				{
 					int new_client = accept(server_socket, NULL, NULL);
@@ -126,15 +129,22 @@ int main(int argc, char** argv)
 						continue;
 					if (new_client > max_socket)
 						max_socket = new_client;
+
+
+
 					data_client[new_client][0] = new_client;
 					data_client[new_client][1] = client_id++;
 					bzero(buffer, BUFFER_SIZE);
 					sprintf(buffer, "server: client %d just arrived\n", data_client[new_client][1]);
 					MsgToClients(buffer, new_client, max_socket, data_client, &write);
 					FD_SET(new_client, &active);
+
+
+
 				}
 				else
 				{
+
 					bzero(buffer, BUFFER_SIZE);
 					ssize_t bytes_rec = recv(socket_id, buffer, BUFFER_SIZE - 1,0);
 					if (bytes_rec <= 0)
@@ -142,6 +152,7 @@ int main(int argc, char** argv)
 						bzero(buffer, BUFFER_SIZE);
 						sprintf(buffer, "server: client %d just left\n", data_client[socket_id][1]);
 						MsgToClients(buffer, socket_id, max_socket, data_client, &write);
+
 						data_client[socket_id][0] = 0;
 						data_client[socket_id][1] = 0;
 						free(msgs[socket_id]);
@@ -149,6 +160,10 @@ int main(int argc, char** argv)
 						close(socket_id);
 						FD_CLR(socket_id, &active);
 					}
+
+
+
+
 					else
 					{
 						if (msgs[socket_id] != NULL)
@@ -160,18 +175,22 @@ int main(int argc, char** argv)
 								MsgError(0);
 							strcpy(msgs[socket_id], buffer);
 						}
+
+
 						if (strstr(msgs[socket_id], "\n") != NULL)
 						{
 							while(42)
 							{
 								char* msg_aux;
 								int em_status;
-	
 								em_status = extract_message(&msgs[socket_id], &msg_aux);
 								if (em_status < 0)
 									MsgError(0);
 								if (em_status == 0)
 									break;
+
+
+
 								bzero(buffer, BUFFER_SIZE);
 								sprintf(buffer, "client %d: %s", data_client[socket_id][1], msg_aux);
 								MsgToClients(buffer, socket_id, max_socket, data_client, &write);
